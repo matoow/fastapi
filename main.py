@@ -1,7 +1,11 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from logger import setup_logging
 import auth
+
+setup_logging()
+
 
 app = FastAPI()
 
@@ -21,13 +25,16 @@ app.add_middleware(
 )
 app.include_router(auth.api_router)
 
+
 @app.get("/")
 async def root():
-  return {"message": "Hello World"}
+    return {"message": "Hello World"}
+
 
 @app.get("/items/")
 async def read_items(token: str = Depends(oauth2_scheme)):
     return {"token": token}
+
 
 @app.get("/path-params/{item_id}")
 async def read_item(item_id: int):
@@ -36,6 +43,4 @@ async def read_item(item_id: int):
 
 @app.get("/query-params/")
 async def read_item(skip: int = 0, limit: int = 10, q: str | None = None):
-    return  {"skip": skip, "limit": limit, "q": q}
-
-
+    return {"skip": skip, "limit": limit, "q": q}
